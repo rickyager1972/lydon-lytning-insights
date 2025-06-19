@@ -24,8 +24,12 @@ Summarize the key messaging, CTAs, tone, and target audience.
     return NextResponse.json({
       summary: response.choices[0].message?.content || "No summary generated"
     })
-  } catch (error: unknown) {
-    console.error("Error in /api/analyze:", error)
-    return NextResponse.json({ error: "Server error" }, { status: 500 })
+  catch (error: unknown) {
+  if (error instanceof Error) {
+    console.error("Detailed error in /api/analyze:", error.message)
+  } else {
+    console.error("Unknown error:", JSON.stringify(error))
   }
+  return NextResponse.json({ error: "Server error" }, { status: 500 })
+}
 }
