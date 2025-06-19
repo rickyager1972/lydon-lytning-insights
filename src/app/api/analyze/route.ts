@@ -6,33 +6,29 @@ const openai = new OpenAI({
 })
 
 export async function POST(req: NextRequest) {
-  const body = await req.json()
-  const { competitors } = body
+  try {
+    const body = await req.json()
+    console.log("Received formData:", body)
 
-  const compList = competitors.split(',').map((c: string) => c.trim())
+    if (!body || !body.competitors) {
+      return NextResponse.json({ error: "Missing input" }, { status: 400 })
+    }
 
-  const fakeAds = [
-    "Save on programmatic media today!",
-    "White-labeled DSP services for agencies",
-    "Maximize your ad spend with AI optimization"
-  ]
+    const prompt = `
+You are a strategist analyzing ads from competitors: ${body.competitors}.
+Give a summary of typical value propositions, CTAs, and audience focus.
+`
 
-  const prompt = `
-You are a strategist analyzing ads from competitors: ${compList.join(', ')}.
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4',
+      messages: [{ role: 'user', content: prompt }]
+    })
 
-Here are sample ads:
-${fakeAds.join('\n')}
+    const output = completion.choices[0].message?.content || "No response from model."
 
-Summarize:
-- Common messaging themes
-- Typical CTAs
-- Audience targeting cues
-  `
-
-  const response = await openai.chat.completions.create({
-    model: 'gpt-4',
-    messages: [{ role: 'user', content: prompt }]
-  })
-
-  return NextResponse.json({ summary: response.choices[0].message.content })
+    return NextResponse.json({ summary: output })
+  } catch (error: any) {
+    console.error("Error in /api/analyze:", error)
+    return NextResponse.json({ error: "Server error" }, { status: 500 })
+  }
 }
