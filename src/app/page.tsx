@@ -15,15 +15,22 @@ export default function Home() {
     setFormData({ ...formData, [e.target.name]: e.target.value })
   }
 
-  const handleSubmit = async () => {
-    const res = await fetch('/api/analyze', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
-    })
-    const data = await res.json()
-    alert(JSON.stringify(data, null, 2)) // Shows the result
+const handleSubmit = async () => {
+  const res = await fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(formData)
+  })
+
+  const data = await res.json()
+
+  if (data.summary) {
+    const encoded = encodeURIComponent(data.summary)
+    window.location.href = `/competitor-findings?summary=${encoded}`
+  } else {
+    alert("No summary received from the AI.")
   }
+}
 
   return (
     <main className="p-10 max-w-xl mx-auto">
