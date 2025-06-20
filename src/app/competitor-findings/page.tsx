@@ -12,7 +12,7 @@ export default function CompetitorFindingsPage() {
     if (raw) {
       try {
         setSummary(decodeURIComponent(raw))
-      } catch (err) {
+      } catch {
         setSummary("Could not decode summary.")
       }
     }
