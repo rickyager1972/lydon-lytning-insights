@@ -1,43 +1,40 @@
-import { NextRequest, NextResponse } from 'next/server'
-import OpenAI from 'openai'
-
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-})
-
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    console.log("Received body:", body)
+    console.log("✅ Received body:", body)
 
     if (!body?.competitors) {
+      console.log("❌ Missing 'competitors'")
       return NextResponse.json({ error: "Missing 'competitors'" }, { status: 400 })
     }
 
     const prompt = `
 You are a strategist analyzing display ads from: ${body.competitors}.
 Summarize the key messaging, CTAs, tone, and target audience.
-`
+    `.trim()
 
-    console.log("Calling OpenAI with prompt:", prompt)
+    console.log("🧠 Prompt to OpenAI:", prompt)
 
     const response = await openai.chat.completions.create({
       model: 'gpt-4',
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{ role: 'user', content: prompt }],
     })
 
-    console.log("OpenAI response:", response)
+    console.log("✅ OpenAI response:", JSON.stringify(response))
 
-    return NextResponse.json({
-      summary: response.choices[0].message?.content || "No summary generated"
-    })
+    const summary = response.choices?.[0]?.message?.content || "No summary generated"
+    return NextResponse.json({ summary })
 
   } catch (error: unknown) {
+    console.error("🔥 Caught Error in /api/analyze")
+
     if (error instanceof Error) {
-      console.error("Detailed error in /api/analyze:", error.message)
+      console.error("Detailed message:", error.message)
+      console.error("Full stack:", error.stack)
     } else {
-      console.error("Unknown error in /api/analyze:", JSON.stringify(error))
+      console.error("Non-standard error:", JSON.stringify(error))
     }
+
     return NextResponse.json({ error: "Server error" }, { status: 500 })
   }
 }
