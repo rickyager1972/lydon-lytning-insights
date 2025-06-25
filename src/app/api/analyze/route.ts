@@ -8,14 +8,9 @@ const openai = new OpenAI({
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json()
-    console.log("✅ Received body:", body)
+    const { brand, description, competitors, productFocus, objectives } = body
 
-    if (!body?.competitors) {
-      console.log("❌ Missing 'competitors' field in request body.")
-      return NextResponse.json({ error: "Missing 'competitors'" }, { status: 400 })
-    }
-
-const prompt = `
+    const prompt = `
 You are an advertising strategist helping summarize key competitor ad tactics.
 
 Based on the following brand context:
@@ -37,30 +32,19 @@ Unique Positioning:
 ---
 
 Each competitor section should use exactly these labeled headings. Be concise but informative.
-`.trim()
-
-    console.log("🧠 Prompt to OpenAI:", prompt)
+`
 
     const response = await openai.chat.completions.create({
       model: 'gpt-3.5-turbo',
-      messages: [{ role: 'user', content: prompt }]
+      messages: [{ role: 'user', content: prompt }],
+      temperature: 0.7
     })
 
-    console.log("✅ OpenAI response:", JSON.stringify(response))
+    const summary = response.choices[0].message?.content || 'No summary returned.'
 
-    const summary = response.choices?.[0]?.message?.content || "No summary generated"
     return NextResponse.json({ summary })
-
   } catch (error: unknown) {
-    console.error("🔥 Caught error in /api/analyze")
-
-    if (error instanceof Error) {
-      console.error("Detailed message:", error.message)
-      console.error("Full stack:", error.stack)
-    } else {
-      console.error("Non-standard error object:", JSON.stringify(error))
-    }
-
-    return NextResponse.json({ error: "Server error" }, { status: 500 })
+    console.error('Error generating competitor insights:', error)
+    return NextResponse.json({ error: 'Server error' }, { status: 500 })
   }
 }
