@@ -9,13 +9,26 @@ export default function Home() {
     competitors: '',
     productFocus: '',
     objectives: '',
-    targetAudience: ''
+    targetAudience: '',
+    preferredChannels: [] as string[],
+    durationValue: '',
+    durationUnit: 'weeks',
+    budget: ''
   })
 
   const [loading, setLoading] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value, type, checked } = e.target
+
+    if (type === 'checkbox') {
+      const newChannels = checked
+        ? [...formData.preferredChannels, value]
+        : formData.preferredChannels.filter((v) => v !== value)
+      setFormData({ ...formData, preferredChannels: newChannels })
+    } else {
+      setFormData({ ...formData, [name]: value })
+    }
   }
 
   const handleSubmit = async () => {
@@ -35,9 +48,17 @@ export default function Home() {
       })
       const audienceData = await res2.json()
 
+      const res3 = await fetch('/api/media-plan', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData)
+      })
+      const mediaData = await res3.json()
+
       const queryParams = new URLSearchParams({
         summary: encodeURIComponent(summaryData.summary),
-        audience: encodeURIComponent(JSON.stringify(audienceData.personas || []))
+        audience: encodeURIComponent(JSON.stringify(audienceData.personas || [])),
+        mediaPlan: encodeURIComponent(mediaData.plan || '')
       })
 
       window.location.href = `/summary?${queryParams.toString()}`
@@ -49,6 +70,17 @@ export default function Home() {
     }
   }
 
+  const channels = [
+    'Google Display Network',
+    'Facebook / Instagram',
+    'LinkedIn',
+    'Twitter / X',
+    'YouTube',
+    'TikTok',
+    'Programmatic DSP',
+    'Reddit'
+  ]
+
   return (
     <main className="p-10 max-w-xl mx-auto">
       <h1 className="text-2xl font-bold mb-6">Lytning AI Strategy Input</h1>
@@ -56,21 +88,4 @@ export default function Home() {
       <input name="brand" placeholder="Brand Name" onChange={handleChange} className="block border p-2 w-full mb-3" />
       <textarea name="description" placeholder="Brand Description" onChange={handleChange} className="block border p-2 w-full mb-3" />
       <textarea name="competitors" placeholder="Competitor Domains (comma-separated)" onChange={handleChange} className="block border p-2 w-full mb-3" />
-      <input name="productFocus" placeholder="Product or Service Focus" onChange={handleChange} className="block border p-2 w-full mb-3" />
-      <input name="objectives" placeholder="Campaign Objectives" onChange={handleChange} className="block border p-2 w-full mb-3" />
-      <input name="targetAudience" placeholder="Target Audience (Optional)" onChange={handleChange} className="block border p-2 w-full mb-3" />
-
-      <button
-        onClick={handleSubmit}
-        disabled={loading}
-        className={`mt-4 px-4 py-2 text-white rounded ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}
-      >
-        {loading ? 'Generating...' : 'Generate Findings'}
-      </button>
-
-      {loading && (
-        <p className="mt-4 text-sm text-gray-600">Generating AI insights. Please wait...</p>
-      )}
-    </main>
-  )
-}
+      <input name="productFocus" placeholder="Product or Service Focus" onChange={handleChange} className="block border p-2 w-full m
