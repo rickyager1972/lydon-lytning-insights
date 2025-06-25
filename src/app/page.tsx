@@ -18,18 +18,19 @@ export default function Home() {
 
   const [loading, setLoading] = useState(false)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type, checked } = e.target
+const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const { name, value, type } = e.target
 
-    if (type === 'checkbox') {
-      const updatedChannels = checked
-        ? [...formData.preferredChannels, value]
-        : formData.preferredChannels.filter((v) => v !== value)
-      setFormData({ ...formData, preferredChannels: updatedChannels })
-    } else {
-      setFormData({ ...formData, [name]: value })
-    }
+  if (type === 'checkbox') {
+    const target = e.target as HTMLInputElement
+    const updatedChannels = target.checked
+      ? [...formData.preferredChannels, value]
+      : formData.preferredChannels.filter((v) => v !== value)
+    setFormData({ ...formData, preferredChannels: updatedChannels })
+  } else {
+    setFormData({ ...formData, [name]: value })
   }
+}
 
   const handleSubmit = async () => {
     setLoading(true)
