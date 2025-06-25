@@ -21,16 +21,12 @@ export default function AudienceResults() {
     if (!raw) return
 
     try {
-      const decoded = decodeURIComponent(raw)
-        .replace(/\\n/g, '\n') // Convert escaped \n into real line breaks
-        .replace(/\r/g, '')
+      const decoded = decodeURIComponent(raw).replace(/\\n/g, '\n')
+      const blocks = decoded.split(/\n(?=\d+\. Persona Name:)/).filter(Boolean)
 
-      // Split by each "Persona X" block
-      const personaBlocks = decoded.split(/Persona \d+:/g).filter(Boolean)
-
-      const parsed = personaBlocks.map((block) => {
+      const parsed: Persona[] = blocks.map((block) => {
         const get = (label: string) => {
-          const match = block.match(new RegExp(`- ${label}:\\s*(.+)`, 'i'))
+          const match = block.match(new RegExp(`${label}:\\s*(.+)`, 'i'))
           return match?.[1]?.trim() || ''
         }
 
