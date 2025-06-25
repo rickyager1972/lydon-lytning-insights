@@ -18,14 +18,14 @@ export default function Home() {
 
   const [loading, setLoading] = useState(false)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type, checked } = e.target
 
     if (type === 'checkbox') {
-      const newChannels = checked
+      const updatedChannels = checked
         ? [...formData.preferredChannels, value]
         : formData.preferredChannels.filter((v) => v !== value)
-      setFormData({ ...formData, preferredChannels: newChannels })
+      setFormData({ ...formData, preferredChannels: updatedChannels })
     } else {
       setFormData({ ...formData, [name]: value })
     }
@@ -88,4 +88,59 @@ export default function Home() {
       <input name="brand" placeholder="Brand Name" onChange={handleChange} className="block border p-2 w-full mb-3" />
       <textarea name="description" placeholder="Brand Description" onChange={handleChange} className="block border p-2 w-full mb-3" />
       <textarea name="competitors" placeholder="Competitor Domains (comma-separated)" onChange={handleChange} className="block border p-2 w-full mb-3" />
-      <input name="productFocus" placeholder="Product or Service Focus" onChange={handleChange} className="block border p-2 w-full m
+      <input name="productFocus" placeholder="Product or Service Focus" onChange={handleChange} className="block border p-2 w-full mb-3" />
+      <input name="objectives" placeholder="Campaign Objectives" onChange={handleChange} className="block border p-2 w-full mb-3" />
+      <input name="targetAudience" placeholder="Target Audience (Optional)" onChange={handleChange} className="block border p-2 w-full mb-6" />
+
+      <label className="font-semibold block mb-2">Preferred Distribution Channels</label>
+      <div className="grid grid-cols-2 gap-2 mb-4">
+        {channels.map((channel) => (
+          <label key={channel} className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              name="preferredChannels"
+              value={channel}
+              checked={formData.preferredChannels.includes(channel)}
+              onChange={handleChange}
+            />
+            <span className="text-sm">{channel}</span>
+          </label>
+        ))}
+      </div>
+
+      <label className="font-semibold block mb-2">Campaign Duration</label>
+      <div className="flex space-x-2 mb-4">
+        <input
+          type="number"
+          name="durationValue"
+          placeholder="e.g. 6"
+          onChange={handleChange}
+          className="border p-2 w-2/3"
+        />
+        <select name="durationUnit" value={formData.durationUnit} onChange={handleChange} className="border p-2 w-1/3">
+          <option value="weeks">Weeks</option>
+          <option value="months">Months</option>
+        </select>
+      </div>
+
+      <input
+        name="budget"
+        placeholder="Campaign Budget (USD)"
+        onChange={handleChange}
+        className="block border p-2 w-full mb-6"
+      />
+
+      <button
+        onClick={handleSubmit}
+        disabled={loading}
+        className={`mt-4 px-4 py-2 text-white rounded ${loading ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'}`}
+      >
+        {loading ? 'Generating...' : 'Generate Findings'}
+      </button>
+
+      {loading && (
+        <p className="mt-4 text-sm text-gray-600">Generating AI insights. Please wait...</p>
+      )}
+    </main>
+  )
+}
