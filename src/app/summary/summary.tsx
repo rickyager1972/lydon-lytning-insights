@@ -58,23 +58,32 @@ export default function SummaryResults() {
       <div className="mb-10">
         <h2 className="text-xl font-bold mb-3">🔍 Competitor Strategy Summary</h2>
         {summary ? (
-  <div className="border rounded-lg p-4 bg-white shadow-sm whitespace-pre-wrap text-gray-800">
-    {summary.split('\n').map((line, idx) => {
-      const match = line.match(/^(-?\s*)([\w\s&]+):\s*(.*)$/)
-      if (match) {
-        const [, prefix, label, content] = match
-        return (
-          <p key={idx}>
-            {prefix}<strong>{label}:</strong> {content}
-          </p>
-        )
-      }
-      return <p key={idx}>{line}</p>
-    })}
+  <div className="space-y-6">
+    {summary
+      .replace(/\\n/g, '\n')
+      .split(/\n(?=Competitor:|Brand:)/)
+      .filter(Boolean)
+      .map((block, index) => (
+        <div key={index} className="border rounded-lg p-4 bg-white shadow-sm text-gray-800">
+          {block.split('\n').map((line, i) => {
+            const match = line.match(/^(-?\s*)([\w\s&]+):\s*(.*)$/)
+            if (match) {
+              const [, prefix, label, content] = match
+              return (
+                <p key={i}>
+                  {prefix}<strong>{label}:</strong> {content}
+                </p>
+              )
+            }
+            return <p key={i}>{line}</p>
+          })}
+        </div>
+      ))}
   </div>
 ) : (
   <p className="text-red-500">No summary available.</p>
 )}
+
         <a
           href={`/competitor-findings?summary=${encodeURIComponent(summary || '')}`}
           className="inline-block mt-3 text-blue-600 underline"

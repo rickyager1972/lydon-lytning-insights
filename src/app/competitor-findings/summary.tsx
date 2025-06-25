@@ -5,35 +5,41 @@ import { useSearchParams } from 'next/navigation'
 
 export default function CompetitorSummary() {
   const params = useSearchParams()
-  const [summary, setSummary] = useState<string | null>(null)
+  const [sections, setSections] = useState<string[]>([])
 
   useEffect(() => {
     const raw = params.get('summary')
-    if (raw) {
-      const decoded = decodeURIComponent(raw).replace(/\\n/g, '\n')
-      setSummary(decoded)
-    }
+    if (!raw) return
+
+    const decoded = decodeURIComponent(raw).replace(/\\n/g, '\n')
+
+    // Split each competitor block on "Competitor:" or "Brand:"
+    const blocks = decoded.split(/\n(?=Competitor:|Brand:)/).filter(Boolean)
+
+    setSections(blocks)
   }, [params])
 
   return (
-    <div>
-      {summary ? (
-        <div className="border rounded-lg p-4 bg-white shadow-sm whitespace-pre-wrap text-gray-800">
-          {summary.split('\n').map((line, idx) => {
-            const match = line.match(/^(-?\s*)([\w\s&]+):\s*(.*)$/)
-            if (match) {
-              const [, prefix, label, content] = match
-              return (
-                <p key={idx}>
-                  {prefix}<strong>{label}:</strong> {content}
-                </p>
-              )
-            }
-            return <p key={idx}>{line}</p>
-          })}
-        </div>
+    <div className="space-y-6">
+      {sections.length === 0 ? (
+        <p className="text-red-500">No competitor summary found.</p>
       ) : (
-        <p className="text-red-500">No summary data found. Please return to the home form.</p>
+        sections.map((block, index) => (
+          <div key={index} className="border rounded-lg p-4 bg-white shadow-sm text-gray-800">
+            {block.split('\n').map((line, i) => {
+              const match = line.match(/^(-?\s*)([\w\s&]+):\s*(.*)$/)
+              if (match) {
+                const [, prefix, label, content] = match
+                return (
+                  <p key={i}>
+                    {prefix}<strong>{label}:</strong> {content}
+                  </p>
+                )
+              }
+              return <p key={i}>{line}</p>
+            })}
+          </div>
+        ))
       )}
     </div>
   )
