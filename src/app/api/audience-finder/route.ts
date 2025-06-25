@@ -10,10 +10,10 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const { brand, description, competitors, productFocus, objectives, targetAudience } = body
 
-    const prompt = `
-You are an audience strategy expert.
+   const prompt = `
+You are an audience strategist creating segments for a digital ad campaign.
 
-Based on the following brand and campaign context:
+Based on the following context:
 - Brand: ${brand}
 - Description: ${description}
 - Product/Service Focus: ${productFocus}
@@ -21,13 +21,16 @@ Based on the following brand and campaign context:
 - Competitors: ${competitors}
 - Target Audience Hint: ${targetAudience}
 
-Generate 3–5 distinct audience personas. For each persona, include:
-- Persona Name
-- Age Range
-- Interests
-- Digital Behavior
-- Platform Affinities (e.g., Google, Instagram, LinkedIn)
-- Key Messaging Angle
+Generate exactly 4 distinct audience personas using the following format:
+
+1. Persona Name: [Name]
+   - Age Range:
+   - Interests:
+   - Digital Behavior:
+   - Platform Affinities:
+   - Key Messaging Angle:
+
+Only return these 4 personas in this structure — no preamble or additional text.
 `
 
     const response = await openai.chat.completions.create({

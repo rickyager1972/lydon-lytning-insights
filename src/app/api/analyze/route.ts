@@ -15,14 +15,29 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing 'competitors'" }, { status: 400 })
     }
 
-    const prompt = `
-You are a strategist analyzing display ads from the following competitors: ${body.competitors}.
-Summarize:
-- Key messaging themes
-- Common calls to action
-- Emotional tone or style
-- Implied target audience
-    `.trim()
+const prompt = `
+You are an advertising strategist helping summarize key competitor ad tactics.
+
+Based on the following brand context:
+- Brand: ${brand}
+- Description: ${description}
+- Product Focus: ${productFocus}
+- Objectives: ${objectives}
+- Competitor Websites: ${competitors}
+
+Return a competitor strategy summary using the following format. Create one card per competitor:
+
+Competitor: [Name or Website]
+Messaging Themes:
+Tone:
+Target Audience:
+Display Ad Style:
+Call to Action Phrases:
+Unique Positioning:
+---
+
+Each competitor section should use exactly these labeled headings. Be concise but informative.
+`.trim()
 
     console.log("🧠 Prompt to OpenAI:", prompt)
 
