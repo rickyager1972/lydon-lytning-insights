@@ -22,25 +22,27 @@ export default function AudienceResults() {
 
     try {
       const decoded = decodeURIComponent(raw)
-      const blocks = decoded.split(/Persona \d+:?/i)
+        .replace(/\\n/g, '\n') // Convert escaped \n into real line breaks
+        .replace(/\r/g, '')
 
-      const parsed = blocks
-        .map((block) => {
-          const get = (label: string) => {
-            const match = block.match(new RegExp(`${label}:\\s*(.*)`, 'i'))
-            return match?.[1]?.trim() || ''
-          }
+      // Split by each "Persona X" block
+      const personaBlocks = decoded.split(/Persona \d+:/g).filter(Boolean)
 
-          return {
-            name: get('Persona Name'),
-            ageRange: get('Age Range'),
-            interests: get('Interests'),
-            behavior: get('Digital Behavior'),
-            platforms: get('Platform Affinities'),
-            message: get('Key Messaging Angle')
-          }
-        })
-        .filter((p) => p.name) // remove empty ones
+      const parsed = personaBlocks.map((block) => {
+        const get = (label: string) => {
+          const match = block.match(new RegExp(`- ${label}:\\s*(.+)`, 'i'))
+          return match?.[1]?.trim() || ''
+        }
+
+        return {
+          name: get('Persona Name'),
+          ageRange: get('Age Range'),
+          interests: get('Interests'),
+          behavior: get('Digital Behavior'),
+          platforms: get('Platform Affinities'),
+          message: get('Key Messaging Angle')
+        }
+      })
 
       setPersonas(parsed)
     } catch {
@@ -56,7 +58,7 @@ export default function AudienceResults() {
         <div className="space-y-6">
           {personas.map((p, i) => (
             <div key={i} className="border rounded-lg p-4 bg-white shadow-sm">
-              <h3 className="text-lg font-semibold mb-2">{p.name}</h3>
+              <h3 className="text-lg font-semibold mb-2">{p.name || `Persona ${i + 1}`}</h3>
               <p><strong>Age Range:</strong> {p.ageRange}</p>
               <p><strong>Interests:</strong> {p.interests}</p>
               <p><strong>Digital Behavior:</strong> {p.behavior}</p>
