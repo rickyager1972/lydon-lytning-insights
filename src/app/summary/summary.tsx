@@ -16,17 +16,16 @@ export default function SummaryResults() {
   const params = useSearchParams()
   const [summaryBlocks, setSummaryBlocks] = useState<string[]>([])
   const [personas, setPersonas] = useState<Persona[]>([])
+  const [mediaPlan, setMediaPlan] = useState<string | null>(null)
 
   useEffect(() => {
     const rawSummary = params.get('summary')
     const rawAudience = params.get('audience')
+    const rawMedia = params.get('mediaPlan')
 
     if (rawSummary) {
       const decoded = decodeURIComponent(rawSummary).replace(/\\n/g, '\n')
-
-      // Match start of each competitor block using known keywords
       const blocks = decoded.split(/\n(?=Competitor:|Brand:|\d+\.\s?Competitor)/).filter(Boolean)
-
       setSummaryBlocks(blocks)
     }
 
@@ -55,6 +54,10 @@ export default function SummaryResults() {
       } catch {
         setPersonas([])
       }
+    }
+
+    if (rawMedia) {
+      setMediaPlan(decodeURIComponent(rawMedia).replace(/\\n/g, '\n'))
     }
   }, [params])
 
@@ -92,7 +95,7 @@ export default function SummaryResults() {
         </a>
       </div>
 
-      <div>
+      <div className="mb-10">
         <h2 className="text-xl font-bold mb-3">🎯 Audience Persona Findings</h2>
         {personas.length === 0 ? (
           <p>No audience data found.</p>
@@ -115,6 +118,34 @@ export default function SummaryResults() {
           className="inline-block mt-3 text-blue-600 underline"
         >
           View Audience Findings Page →
+        </a>
+      </div>
+
+      <div className="mb-10">
+        <h2 className="text-xl font-bold mb-3">💰 Budget + Media Plan</h2>
+        {mediaPlan ? (
+          <div className="border rounded-lg p-4 bg-white shadow-sm whitespace-pre-wrap text-gray-800">
+            {mediaPlan.split('\n').map((line, idx) => {
+              const match = line.match(/^(-?\s*)([\w\s&]+):\s*(.*)$/)
+              if (match) {
+                const [, prefix, label, content] = match
+                return (
+                  <p key={idx}>
+                    {prefix}<strong>{label}:</strong> {content}
+                  </p>
+                )
+              }
+              return <p key={idx}>{line}</p>
+            })}
+          </div>
+        ) : (
+          <p className="text-red-500">No media plan data found.</p>
+        )}
+        <a
+          href={`/media-plan?mediaPlan=${encodeURIComponent(mediaPlan || '')}`}
+          className="inline-block mt-3 text-blue-600 underline"
+        >
+          View Full Media Plan →
         </a>
       </div>
     </>
