@@ -88,7 +88,7 @@ export default function SummaryResults() {
           href={`/competitor-findings?summary=${encodeURIComponent(summaryBlocks.join('\n\n'))}`}
           className="inline-block mt-3 text-blue-600 underline"
         >
-          View Full Competitor Insights →
+          View Competitor Insights Page →
         </a>
       </div>
 
@@ -114,7 +114,7 @@ export default function SummaryResults() {
           href={`/audience-findings?audience=${encodeURIComponent(JSON.stringify(personas))}`}
           className="inline-block mt-3 text-blue-600 underline"
         >
-          View Full Audience Findings →
+          View Audience Findings Page →
         </a>
       </div>
     </>
