@@ -58,12 +58,12 @@ export default function SummaryResults() {
       <div className="mb-10">
         <h2 className="text-xl font-bold mb-3">🔍 Competitor Strategy Summary</h2>
         {summary ? (
-          <div className="p-5 bg-gray-50 border rounded whitespace-pre-wrap text-gray-800">
-            {summary}
-          </div>
-        ) : (
-          <p>No summary available.</p>
-        )}
+  <div className="border rounded-lg p-4 bg-white shadow-sm whitespace-pre-wrap text-gray-800">
+    {summary}
+  </div>
+) : (
+  <p className="text-red-500">No summary available.</p>
+)}
         <a
           href={`/competitor-findings?summary=${encodeURIComponent(summary || '')}`}
           className="inline-block mt-3 text-blue-600 underline"

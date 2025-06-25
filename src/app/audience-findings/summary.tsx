@@ -21,10 +21,20 @@ export default function AudienceResults() {
     if (!raw) return
 
     try {
-      const decoded = decodeURIComponent(raw).replace(/\\n/g, '\n')
-      const blocks = decoded.split(/\n(?=\d+\. Persona Name:)/).filter(Boolean)
+      const decoded = decodeURIComponent(raw)
 
-      const parsed: Persona[] = blocks.map((block) => {
+      // Case 1: already structured JSON
+      const parsed = JSON.parse(decoded)
+      if (Array.isArray(parsed) && parsed[0]?.name) {
+        setPersonas(parsed)
+        return
+      }
+
+      // Case 2: fallback to parsing raw GPT text
+      const text = decoded.replace(/\\n/g, '\n')
+      const blocks = text.split(/\n(?=\d+\. Persona Name:)/).filter(Boolean)
+
+      const gptParsed = blocks.map((block) => {
         const get = (label: string) => {
           const match = block.match(new RegExp(`${label}:\\s*(.+)`, 'i'))
           return match?.[1]?.trim() || ''
@@ -40,7 +50,7 @@ export default function AudienceResults() {
         }
       })
 
-      setPersonas(parsed)
+      setPersonas(gptParsed)
     } catch {
       setPersonas([])
     }
