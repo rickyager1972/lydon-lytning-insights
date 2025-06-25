@@ -81,4 +81,22 @@ export default function SummaryResults() {
             {personas.map((p, i) => (
               <div key={i} className="border rounded-lg p-4 bg-white shadow-sm">
                 <h3 className="text-lg font-semibold mb-2">{p.name || `Persona ${i + 1}`}</h3>
-                <p><str
+                <p><strong>Age Range:</strong> {p.ageRange}</p>
+                <p><strong>Interests:</strong> {p.interests}</p>
+                <p><strong>Digital Behavior:</strong> {p.behavior}</p>
+                <p><strong>Platform Affinities:</strong> {p.platforms}</p>
+                <p><strong>Messaging Angle:</strong> {p.message}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        <a
+          href={`/audience-findings?audience=${encodeURIComponent(JSON.stringify(personas))}`}
+          className="inline-block mt-3 text-blue-600 underline"
+        >
+          View Full Audience Findings →
+        </a>
+      </div>
+    </>
+  )
+}
