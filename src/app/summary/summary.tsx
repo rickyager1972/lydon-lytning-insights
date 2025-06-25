@@ -59,7 +59,18 @@ export default function SummaryResults() {
         <h2 className="text-xl font-bold mb-3">🔍 Competitor Strategy Summary</h2>
         {summary ? (
   <div className="border rounded-lg p-4 bg-white shadow-sm whitespace-pre-wrap text-gray-800">
-    {summary}
+    {summary.split('\n').map((line, idx) => {
+      const match = line.match(/^(-?\s*)([\w\s&]+):\s*(.*)$/)
+      if (match) {
+        const [, prefix, label, content] = match
+        return (
+          <p key={idx}>
+            {prefix}<strong>{label}:</strong> {content}
+          </p>
+        )
+      }
+      return <p key={idx}>{line}</p>
+    })}
   </div>
 ) : (
   <p className="text-red-500">No summary available.</p>
