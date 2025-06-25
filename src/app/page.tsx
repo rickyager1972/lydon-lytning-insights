@@ -71,16 +71,14 @@ const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElemen
     }
   }
 
-  const channels = [
-    'Google Display Network',
-    'Facebook / Instagram',
-    'LinkedIn',
-    'Twitter / X',
-    'YouTube',
-    'TikTok',
-    'Programmatic DSP',
-    'Reddit'
-  ]
+const channels = [
+  'Google Display Network',
+  'Facebook / Instagram',
+  'LinkedIn',
+  'Twitter / X',
+  'TikTok',
+  'YouTube'
+]
 
   return (
     <main className="p-10 max-w-xl mx-auto">

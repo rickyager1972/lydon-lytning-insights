@@ -22,28 +22,42 @@ export async function POST(req: NextRequest) {
     } = body
 
     const prompt = `
-You are a digital media planner. Your job is to recommend the most effective advertising channels and budget allocation based on campaign objectives, brand positioning, audience behavior, and competitor strategy.
+You are a digital media planner creating a campaign strategy for a brand.
 
-Here is the context:
+Context:
 - Brand: ${brand}
 - Description: ${description}
 - Product Focus: ${productFocus}
 - Objectives: ${objectives}
-- Target Audience Hint: ${targetAudience}
 - Competitor Domains: ${competitors}
+- Target Audience Hint: ${targetAudience}
+- Campaign Budget: $${budget}
 - User Preferences:
   - Preferred Channels: ${preferredChannels.join(', ')}
-  - Suggested Campaign Duration: ${durationValue} ${durationUnit}
-  - Campaign Budget: $${budget}
+  - Suggested Duration: ${durationValue} ${durationUnit}
 
-Return a recommended media plan that includes:
+Your task:
+1. Recommend an optimized set of distribution channels based on the target audience, product, and competitor activity — not just user preferences.
+2. Allocate the campaign budget across these channels effectively.
+3. Flag any platforms where the user’s preferred spend is too low to perform well.
+4. Suggest reallocations where needed.
+5. Always explain your reasoning if diverging from the user's preferences.
+
+Minimum Recommended Spend Guidelines:
+- Google Display Network: $300+
+- Facebook / Instagram: $300+
+- LinkedIn: $1,000+
+- Twitter / X: $500+
+- TikTok: $500+
+- YouTube: $500+
+
+Format your response exactly as follows:
+
 Media Plan:
-- Recommended Distribution Channels:
-- Duration:
+- Recommended Channels:
+- Campaign Duration:
 - Budget Allocation by Channel:
-- Justification (if different from user preferences):
-
-Respond using this exact structure. Be concise and professional. If your plan differs from user suggestions, explain why.
+- Notes & Rationale (explain any platform adjustments or exclusions):
 `
 
     const response = await openai.chat.completions.create({
